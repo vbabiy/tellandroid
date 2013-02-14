@@ -5,7 +5,7 @@ A set of utilities to make it easier to work with the android emulator telnet pr
 Usage:
   tellandroid geo set [--host=<host>] [--port=<port>] [--] <lat> <long>
   tellandroid geo timed [--host=<host>] [--port=<port>] [--interval=<s>] [--] <lat> <long>
-  tellandroid sms send [--host=<host>] [--port=<port>] [--interval=<s>] <message> [<phonenumber>]
+  tellandroid sms send [--host=<host>] [--port=<port>] <message> [<phonenumber>]
 
 Options:
   -h --help     Show this screen.
