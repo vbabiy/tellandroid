@@ -1,0 +1,59 @@
+#!/usr/bin/env python
+"""
+A set of utilities to make it easier to work with the android emulator telnet protocol.
+
+Usage:
+  anclu geo set [--host=<host>] [--port=<port>] [--] <lat> <long>
+  anclu geo timed [--host=<host>] [--port=<port>] [--interval=<s>] [--] <lat> <long>
+  anclu sms send [--host=<host>] [--port=<port>] [--interval=<s>] <message> [<phonenumber>]
+
+Options:
+  -h --help     Show this screen.
+  --version     Show version.
+  -i --interval=<seconds>    Set the refresh interval [default: 5].
+  --host=<host>    Host to connect to [default: localhost].
+  -p --port=<port>     Host to connect to [default: 5554].
+
+"""
+
+from docopt import docopt
+from tellandroid import VERSION
+from tellandroid.handlers import *
+from tellandroid.telnet import AndroidTelnet
+
+if __name__ == '__main__':
+    arguments = docopt(__doc__, help=True, version='Android Command Line Utils %s' % VERSION)
+    telnet = AndroidTelnet(arguments['--host'], arguments['--port'])
+
+    result = None
+    if arguments['geo']:
+      command = "set"
+      args = [arguments['<long>'], arguments['<lat>']]
+      kwargs = {}
+      if arguments['timed']:
+        command = "timed"
+        kwargs['interval'] = arguments['--interval']
+
+      result = GeoHandler(telnet).execute(command, *args, **kwargs)
+    elif arguments['sms']:
+      message = arguments['<message>']
+      number = arguments['<phonenumber>']
+      result = SmsHandler(telnet).execute(message, number)
+
+    # Handle results
+    if isinstance(result, Thread):
+      # If we get a thread back, lets run it.
+      result.daemon = True
+      result.start()
+
+      while True:
+        # wait for thread to be killed.
+        time.sleep(1)
+
+    elif result:
+      sys.exit(0) # Worked!
+    else:
+      print "Sorry, we failed! :("
+      sys.exit(1) # Failed.
+
+
