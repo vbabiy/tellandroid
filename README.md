@@ -1,4 +1,4 @@
-android-geofix
-==============
+tellandroid
+===========
 
-Making it easy to set the location of an android emulator
+A command line utility that wraps the android emulator telnet protocol.
